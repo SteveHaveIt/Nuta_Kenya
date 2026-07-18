@@ -1,0 +1,33 @@
+# Render Blueprint
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Backend API Service
+  - type: web
+    name: nuta-kenya-backend
+    env: node
+    region: oregon
+    rootDir: apps/backend
+    buildCommand: npm install && npm run build
+    startCommand: npx medusa start -H 0.0.0.0
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NODE_ENV
+        value: production
+      # Required environment variables (set actual values in Render dashboard)
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: STORE_CORS
+        value: "https://nuta-kenya.vercel.app"
+      - key: ADMIN_CORS
+        value: "https://nuta-kenya-admin.vercel.app"
+      - key: AUTH_CORS
+        value: "https://nuta-kenya.vercel.app,https://nuta-kenya-admin.vercel.app"
