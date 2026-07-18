@@ -9,7 +9,7 @@ services:
     region: oregon
     rootDir: apps/backend
     buildCommand: npm install && npm run build
-    startCommand: npx medusa start -H 0.0.0.0
+    startCommand: cd .medusa/server && npx medusa start -H 0.0.0.0
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
