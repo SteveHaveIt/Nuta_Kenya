@@ -26,8 +26,8 @@ services:
       - key: COOKIE_SECRET
         generateValue: true
       - key: STORE_CORS
-        value: "https://nuta-kenya.onrender.com"
+        value: "https://nuta.vercel.app,https://nuta-kenya.onrender.com"
       - key: ADMIN_CORS
         value: "https://nuta-kenya.onrender.com"
       - key: AUTH_CORS
-        value: "https://nuta-kenya.onrender.com"
+        value: "https://nuta.vercel.app,https://nuta-kenya.onrender.com"
