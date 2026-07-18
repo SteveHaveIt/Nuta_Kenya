@@ -16,18 +16,18 @@ services:
         value: 20
       - key: NODE_ENV
         value: production
-      # Required environment variables (set actual values in Render dashboard)
+      # Required environment variables
       - key: DATABASE_URL
         sync: false
       - key: REDIS_URL
-        sync: false
+        value: "redis://default:gQAAAAAAAjbTAAIgcDEzNmM1YjQ3MGY1Y2M0MjZhOGE3ZjdlNTkzMTZhYTUwZQ@relieved-terrier-145107.upstash.io:6379"
       - key: JWT_SECRET
         generateValue: true
       - key: COOKIE_SECRET
         generateValue: true
       - key: STORE_CORS
-        value: "https://nuta-kenya.vercel.app,https://nuta-kenya.onrender.com"
+        value: "https://nuta-kenya.onrender.com"
       - key: ADMIN_CORS
-        value: "https://nuta-kenya-admin.vercel.app,https://nuta-kenya.onrender.com"
+        value: "https://nuta-kenya.onrender.com"
       - key: AUTH_CORS
-        value: "https://nuta-kenya.vercel.app,https://nuta-kenya-admin.vercel.app,https://nuta-kenya.onrender.com"
+        value: "https://nuta-kenya.onrender.com"
