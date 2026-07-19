@@ -5,6 +5,9 @@ import Hero from "@modules/home/components/hero"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Medusa Next.js Starter Template",
   description:
@@ -15,17 +18,19 @@ export default async function Home(props: {
   params: Promise<{ countryCode: string }>
 }) {
   const params = await props.params
-
   const { countryCode } = params
 
-  const region = await getRegion(countryCode)
+  let region = null
+  let collections: any[] = []
 
-  const { collections } = await listCollections({
-    fields: "id, handle, title",
-  })
-
-  if (!collections || !region) {
-    return null
+  try {
+    region = await getRegion(countryCode)
+    const result = await listCollections({
+      fields: "id, handle, title",
+    })
+    collections = result?.collections || []
+  } catch {
+    // Backend not available, render with empty state
   }
 
   return (
@@ -33,7 +38,9 @@ export default async function Home(props: {
       <Hero />
       <div className="py-12">
         <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
+          {collections.length > 0 && region && (
+            <FeaturedProducts collections={collections} region={region} />
+          )}
         </ul>
       </div>
     </>
