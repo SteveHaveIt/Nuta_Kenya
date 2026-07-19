@@ -20,7 +20,7 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: REDIS_URL
-        value: "redis://default:gQAAAAAAAjbTAAIgcDEzNmM1YjQ3MGY1Y2M0MjZhOGE3ZjdlNTkzMTZhYTUwZQ@relieved-terrier-145107.upstash.io:6379"
+        value: "redis://default:f2UWJaPhSKLSiz4s0JvtIe82MhD86bdJ@island-preeminent-advice-67905.db.redis.io:15428"
       - key: JWT_SECRET
         generateValue: true
       - key: COOKIE_SECRET
