@@ -9,11 +9,29 @@ import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 
 export default async function Nav() {
-  const [regions, locales, currentLocale] = await Promise.all([
-    listRegions().then((regions: StoreRegion[]) => regions),
-    listLocales(),
-    getLocale(),
-  ])
+  let regions: StoreRegion[] = []
+  let locales: { code: string; name: string }[] | null = null
+  let currentLocale: string | null = null
+
+  try {
+    const results = await Promise.allSettled([
+      listRegions().then((regions: StoreRegion[]) => regions),
+      listLocales(),
+      getLocale(),
+    ])
+
+    if (results[0].status === "fulfilled") {
+      regions = results[0].value || []
+    }
+    if (results[1].status === "fulfilled") {
+      locales = results[1].value
+    }
+    if (results[2].status === "fulfilled") {
+      currentLocale = results[2].value
+    }
+  } catch {
+    // Backend not available, use empty defaults
+  }
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">

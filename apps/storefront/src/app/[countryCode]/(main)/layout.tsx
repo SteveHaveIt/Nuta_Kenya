@@ -9,19 +9,28 @@ import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
 import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
 
+// Force dynamic rendering to prevent build-time data fetching issues
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
-  const customer = await retrieveCustomer()
-  const cart = await retrieveCart()
+  let customer = null
+  let cart = null
   let shippingOptions: StoreCartShippingOption[] = []
 
-  if (cart) {
-    const { shipping_options } = await listCartOptions()
+  try {
+    customer = await retrieveCustomer()
+    cart = await retrieveCart()
 
-    shippingOptions = shipping_options
+    if (cart) {
+      const { shipping_options } = await listCartOptions()
+      shippingOptions = shipping_options
+    }
+  } catch {
+    // Backend not available, continue with null values
   }
 
   return (
