@@ -13,9 +13,7 @@ type Params = {
   }>
 }
 
-export default async function CustomerServicePage(props: Params) {
-  const params = await props.params
-  const countryCode = params.countryCode
+export default async function CustomerServicePage(_props: Params) {
 
   return (
     <div className="py-12 content-container" data-testid="customer-service-page">
@@ -98,7 +96,7 @@ export default async function CustomerServicePage(props: Params) {
           <p className="text-regular text-ui-fg-subtle mb-4">
             Can&apos;t find what you&apos;re looking for? Reach out to us and we&apos;ll be happy to assist you.
           </p>
-          <UnderlineLink href={`/${countryCode}/account`}>
+          <UnderlineLink href="/account">
             Go to Account
           </UnderlineLink>
         </section>
