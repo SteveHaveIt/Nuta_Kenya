@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm run build --filter=@dtc/storefront",
+  "outputDirectory": "apps/storefront/.next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_BASE_URL": "https://nuta.vercel.app"
+  },
+  "alias": ["nuta.vercel.app"]
+}
