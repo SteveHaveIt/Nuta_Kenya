@@ -131,6 +131,14 @@ export default async function Footer() {
           <Text className="txt-compact-small">
             © {new Date().getFullYear()} Nuta Store. All rights reserved.
           </Text>
+          <a
+            href="https://stevehaveit.com"
+            target="_blank"
+            rel="noreferrer"
+            className="txt-compact-small hover:text-ui-fg-base"
+          >
+            Powered by Steve Have It Enterprise Hub
+          </a>
         </div>
       </div>
     </footer>

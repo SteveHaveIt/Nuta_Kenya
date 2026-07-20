@@ -34,6 +34,16 @@ export default function CheckoutLayout({
         </nav>
       </div>
       <div className="relative" data-testid="checkout-container">{children}</div>
+      <div className="py-4 w-full flex items-center justify-center text-ui-fg-muted">
+        <a
+          href="https://stevehaveit.com"
+          target="_blank"
+          rel="noreferrer"
+          className="txt-compact-small hover:text-ui-fg-base"
+        >
+          Powered by Steve Have It Enterprise Hub
+        </a>
+      </div>
     </div>
   )
 }
