@@ -5,8 +5,8 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 import StoreTemplate from "@modules/store/templates"
 
 export const metadata: Metadata = {
-  title: "Store",
-  description: "Explore all of our products.",
+  title: "Shop | NUTA Store",
+  description: "Explore our premium range of Kenyan peanut products. Shop peanut butter, roasted peanuts, peanut flour, and more.",
 }
 
 type StorePageSearchParams = Record<string, string | string[] | undefined> & {

@@ -1,48 +1,35 @@
 import { Metadata } from "next"
 
-import FeaturedProducts from "@modules/home/components/featured-products"
-import Hero from "@modules/home/components/hero"
-import { listCollections } from "@lib/data/collections"
-import { getRegion } from "@lib/data/regions"
+import AnnouncementBar from "@modules/home/components/announcement-bar"
+import NutaHero from "@modules/home/components/nuta-hero"
+import FeaturedCategories from "@modules/home/components/featured-categories"
+import WhyNuta from "@modules/home/components/why-nuta"
+import BestSellers from "@modules/home/components/best-sellers"
+import HealthBenefits from "@modules/home/components/health-benefits"
+import Testimonials from "@modules/home/components/testimonials"
+import PromoBanner from "@modules/home/components/promo-banner"
+import Newsletter from "@modules/home/components/newsletter"
 
-// Force dynamic rendering
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
+  title: "NUTA Store | Premium Kenyan Peanut Products",
   description:
-    "A performant frontend ecommerce starter template with Next.js 15 and Medusa.",
+    "Discover naturally nutritious peanut products proudly made in Kenya. Shop premium peanut butter, roasted peanuts, and more at NUTA.",
 }
 
-export default async function Home(props: {
-  params: Promise<{ countryCode: string }>
-}) {
-  const params = await props.params
-  const { countryCode } = params
-
-  let region = null
-  let collections: any[] = []
-
-  try {
-    region = await getRegion(countryCode)
-    const result = await listCollections({
-      fields: "id, handle, title",
-    })
-    collections = result?.collections || []
-  } catch {
-    // Backend not available, render with empty state
-  }
-
+export default async function Home() {
   return (
     <>
-      <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          {collections.length > 0 && region && (
-            <FeaturedProducts collections={collections} region={region} />
-          )}
-        </ul>
-      </div>
+      <AnnouncementBar />
+      <NutaHero />
+      <FeaturedCategories />
+      <WhyNuta />
+      <BestSellers products={[]} />
+      <HealthBenefits />
+      <Testimonials />
+      <PromoBanner />
+      <Newsletter />
     </>
   )
 }
