@@ -72,18 +72,36 @@ export default async function PaginatedProducts({
 
   return (
     <>
-      <ul
-        className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8"
+      {/* NUTA Product Grid */}
+      <div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         data-testid="products-list"
       >
-        {products.map((p) => {
-          return (
-            <li key={p.id}>
-              <ProductPreview product={p} region={region} />
-            </li>
-          )
-        })}
-      </ul>
+        {products.map((p) => (
+          <div 
+            key={p.id} 
+            className="animate-fade-in"
+            style={{ animationDelay: `${products.indexOf(p) * 50}ms` }}
+          >
+            <ProductPreview product={p} region={region} />
+          </div>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {products.length === 0 && (
+        <div className="text-center py-16 bg-white rounded-2xl">
+          <div className="w-20 h-20 mx-auto mb-4 bg-[#FAF8F2] rounded-full flex items-center justify-center">
+            <span className="text-4xl">🥜</span>
+          </div>
+          <h3 className="text-xl font-semibold text-[#2B2B2B] mb-2">No Products Found</h3>
+          <p className="text-[#666666] mb-4">Check back soon for our fresh products!</p>
+          <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#4E8B41] text-white rounded-full text-sm font-medium">
+            🇰🇪 Proudly Kenyan
+          </span>
+        </div>
+      )}
+
       {totalPages > 1 && (
         <Pagination
           data-testid="product-pagination"

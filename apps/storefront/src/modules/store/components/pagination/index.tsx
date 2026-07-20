@@ -35,9 +35,13 @@ export function Pagination({
   ) => (
     <button
       key={p}
-      className={clx("txt-xlarge-plus text-ui-fg-muted", {
-        "text-ui-fg-base hover:text-ui-fg-subtle": isCurrent,
-      })}
+      className={clx(
+        "w-10 h-10 rounded-full font-semibold transition-all duration-200 flex items-center justify-center",
+        {
+          "bg-[#8B4513] text-white shadow-md": isCurrent,
+          "bg-white text-[#666666] hover:bg-[#8B4513] hover:text-white shadow-sm border border-[#E8D5C4]": !isCurrent,
+        }
+      )}
       disabled={isCurrent}
       onClick={() => handlePageChange(p)}
     >
@@ -49,9 +53,9 @@ export function Pagination({
   const renderEllipsis = (key: string) => (
     <span
       key={key}
-      className="txt-xlarge-plus text-ui-fg-muted items-center cursor-default"
+      className="w-10 h-10 flex items-center justify-center text-[#D4A574] font-semibold"
     >
-      ...
+      •••
     </span>
   )
 
@@ -108,7 +112,39 @@ export function Pagination({
   // Render the component
   return (
     <div className="flex justify-center w-full mt-12">
-      <div className="flex gap-3 items-end" data-testid={dataTestid}>{renderPageButtons()}</div>
+      <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-soft" data-testid={dataTestid}>
+        {/* Previous button */}
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+          className={clx(
+            "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200",
+            page === 1
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-[#FAF8F2] text-[#8B4513] hover:bg-[#8B4513] hover:text-white"
+          )}
+        >
+          <span className="text-lg">←</span>
+        </button>
+
+        <div className="flex items-center gap-1">
+          {renderPageButtons()}
+        </div>
+
+        {/* Next button */}
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+          className={clx(
+            "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200",
+            page === totalPages
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-[#FAF8F2] text-[#8B4513] hover:bg-[#8B4513] hover:text-white"
+          )}
+        >
+          <span className="text-lg">→</span>
+        </button>
+      </div>
     </div>
   )
 }

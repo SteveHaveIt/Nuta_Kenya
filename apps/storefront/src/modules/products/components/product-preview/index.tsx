@@ -14,35 +14,70 @@ export default async function ProductPreview({
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
 }) {
-  // const pricedProduct = await listProducts({
-  //   regionId: region.id,
-  //   queryParams: { id: [product.id!] },
-  // }).then(({ response }) => response.products[0])
-
-  // if (!pricedProduct) {
-  //   return null
-  // }
-
   const { cheapestPrice } = getProductPrice({
     product,
   })
 
   return (
-    <LocalizedClientLink href={`/products/${product.handle}`} className="group">
-      <div data-testid="product-wrapper">
-        <Thumbnail
-          thumbnail={product.thumbnail}
-          images={product.images}
-          size="full"
-          isFeatured={isFeatured}
-        />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
-            {product.title}
-          </Text>
-          <div className="flex items-center gap-x-2">
-            {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+    <LocalizedClientLink href={`/products/${product.handle}`} className="group block">
+      <div 
+        data-testid="product-wrapper" 
+        className="bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+      >
+        {/* Image Container */}
+        <div className="relative aspect-square bg-gradient-to-br from-[#FAF8F2] to-[#F5E1C8] overflow-hidden">
+          <Thumbnail
+            thumbnail={product.thumbnail}
+            images={product.images}
+            size="full"
+            isFeatured={isFeatured}
+          />
+          
+          {/* Badge */}
+          <div className="absolute top-3 left-3">
+            <span className="px-3 py-1 bg-gradient-to-r from-[#8B4513] to-[#A0522D] text-white text-xs font-semibold rounded-full shadow-md">
+              🛒 Best Seller
+            </span>
           </div>
+
+          {/* Quick View Overlay */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <button className="bg-white text-[#8B4513] px-6 py-2.5 rounded-full font-semibold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+              Quick View
+            </button>
+          </div>
+        </div>
+
+        {/* Product Info */}
+        <div className="p-4">
+          <h3 
+            className="font-semibold text-[#2B2B2B] mb-2 line-clamp-1 group-hover:text-[#8B4513] transition-colors" 
+            data-testid="product-title"
+          >
+            {product.title}
+          </h3>
+          
+          {/* Description */}
+          {product.description && (
+            <p className="text-sm text-[#666666] mb-3 line-clamp-2">
+              {product.description}
+            </p>
+          )}
+
+          {/* Price and Status */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+            </div>
+            <span className="px-2.5 py-1 bg-[#4E8B41]/10 text-[#4E8B41] text-xs font-medium rounded-full">
+              ✓ In Stock
+            </span>
+          </div>
+
+          {/* Add to Cart Button */}
+          <button className="w-full mt-4 bg-gradient-to-r from-[#8B4513] to-[#A0522D] hover:from-[#6B3410] hover:to-[#8B4513] text-white py-2.5 rounded-full font-semibold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+            <span>🛒</span> Add to Cart
+          </button>
         </div>
       </div>
     </LocalizedClientLink>
