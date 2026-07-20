@@ -30,18 +30,18 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
     if (!collection) {
       return {
-        title: `Collection | Medusa Store`,
+        title: `Collection | Nuta Store`,
         description: "Browse our collections",
       }
     }
 
     return {
-      title: `${collection.title} | Medusa Store`,
+      title: `${collection.title} | Nuta Store`,
       description: `${collection.title} collection`,
     }
   } catch {
     return {
-      title: `Collection | Medusa Store`,
+      title: `Collection | Nuta Store`,
       description: "Browse our collections",
     }
   }

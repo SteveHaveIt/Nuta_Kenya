@@ -28,16 +28,16 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
     if (!productCategory) {
       return {
-        title: `Category | Medusa Store`,
+        title: `Category | Nuta Store`,
         description: "Browse our product categories",
       }
     }
 
-    const title = productCategory.name + " | Medusa Store"
+    const title = productCategory.name + " | Nuta Store"
     const description = productCategory.description ?? `${title} category.`
 
     return {
-      title: `${title} | Medusa Store`,
+      title: `${title} | Nuta Store`,
       description,
       alternates: {
         canonical: `${params.category.join("/")}`,
@@ -45,7 +45,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     }
   } catch {
     return {
-      title: `Category | Medusa Store`,
+      title: `Category | Nuta Store`,
       description: "Browse our product categories",
     }
   }

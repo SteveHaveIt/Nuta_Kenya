@@ -40,7 +40,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
     if (!region) {
       return {
-        title: `Product | Medusa Store`,
+        title: `Product | Nuta Store`,
         description: "Browse our products",
       }
     }
@@ -52,23 +52,23 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
     if (!product) {
       return {
-        title: `Product | Medusa Store`,
+        title: `Product | Nuta Store`,
         description: "Browse our products",
       }
     }
 
     return {
-      title: `${product.title} | Medusa Store`,
+      title: `${product.title} | Nuta Store`,
       description: `${product.title}`,
       openGraph: {
-        title: `${product.title} | Medusa Store`,
+        title: `${product.title} | Nuta Store`,
         description: `${product.title}`,
         images: product.thumbnail ? [product.thumbnail] : [],
       },
     }
   } catch {
     return {
-      title: `Product | Medusa Store`,
+      title: `Product | Nuta Store`,
       description: "Browse our products",
     }
   }

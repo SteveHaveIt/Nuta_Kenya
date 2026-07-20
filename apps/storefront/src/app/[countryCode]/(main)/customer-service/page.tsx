@@ -81,7 +81,13 @@ export default async function CustomerServicePage(_props: Params) {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-base-semi text-ui-fg-base">Phone:</span>
-                <span className="text-regular text-ui-fg-subtle">+254 700 123 456</span>
+                <span className="text-regular text-ui-fg-subtle">0742101089</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-base-semi text-ui-fg-base">WhatsApp:</span>
+                <a href="https://wa.me/254742101089" target="_blank" rel="noopener noreferrer" className="text-regular text-ui-fg-subtle hover:text-ui-fg-interactive">
+                  0742101089
+                </a>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-base-semi text-ui-fg-base">Hours:</span>
