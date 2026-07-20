@@ -40,11 +40,11 @@ export default async function ProductPreview({
             </span>
           </div>
 
-          {/* Quick View Overlay */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <button className="bg-white text-[#8B4513] px-6 py-2.5 rounded-full font-semibold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-              Quick View
-            </button>
+          {/* Hover Overlay - Shows "View Details" */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6">
+            <span className="px-6 py-2.5 bg-white text-[#8B4513] rounded-full font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              View Details →
+            </span>
           </div>
         </div>
 
@@ -74,10 +74,12 @@ export default async function ProductPreview({
             </span>
           </div>
 
-          {/* Add to Cart Button */}
-          <button className="w-full mt-4 bg-gradient-to-r from-[#8B4513] to-[#A0522D] hover:from-[#6B3410] hover:to-[#8B4513] text-white py-2.5 rounded-full font-semibold transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-            <span>🛒</span> Add to Cart
-          </button>
+          {/* View Product Link */}
+          <div className="mt-4 text-center">
+            <span className="text-sm font-medium text-[#8B4513] group-hover:underline">
+              View Product & Add to Cart →
+            </span>
+          </div>
         </div>
       </div>
     </LocalizedClientLink>
