@@ -147,3 +147,4 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
   ],
 }
+# Trigger redeploy
