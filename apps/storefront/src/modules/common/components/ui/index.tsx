@@ -57,7 +57,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
 )
 Heading.displayName = "Heading"
 
-// Button Component
+// Button Component - NUTA Theme
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "transparent"
   size?: "small" | "medium" | "large"
@@ -82,14 +82,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={clsx(
-          "inline-flex gap-2 items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-          variant === "primary" && "bg-black text-white hover:bg-gray-800",
+          "inline-flex gap-2 items-center justify-center rounded-full font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          // NUTA Primary - Warm brown
+          variant === "primary" && "bg-[#8B4513] text-white hover:bg-[#6B3410] hover:shadow-lg",
+          // NUTA Secondary - Warm outline
           variant === "secondary" &&
-            "bg-white text-black border border-gray-200 hover:bg-gray-50",
-          variant === "transparent" && "bg-transparent hover:bg-gray-100",
-          size === "small" && "h-8 px-3 text-sm",
-          size === "medium" && "h-10 px-4",
-          size === "large" && "h-12 px-6 text-lg",
+            "bg-white text-[#8B4513] border-2 border-[#8B4513] hover:bg-[#FFF8F0]",
+          variant === "transparent" && "bg-transparent hover:bg-gray-100 text-[#5C4033]",
+          size === "small" && "h-9 px-4 text-sm",
+          size === "medium" && "h-11 px-6",
+          size === "large" && "h-14 px-8 text-lg",
           className
         )}
         {...props}
@@ -109,7 +111,7 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
     return (
       <div
         ref={ref}
-        className={clsx("bg-white rounded-lg p-4", className)}
+        className={clsx("bg-white rounded-3xl p-6 shadow-sm", className)}
         {...props}
       >
         {children}
@@ -119,9 +121,9 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
 )
 Container.displayName = "Container"
 
-// Badge Component
+// Badge Component - NUTA Theme
 type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
-  color?: "green" | "red" | "blue" | "orange" | "grey" | "purple"
+  color?: "green" | "red" | "blue" | "orange" | "grey" | "purple" | "accent"
 }
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
@@ -130,13 +132,15 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       <span
         ref={ref}
         className={clsx(
-          "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+          "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
           color === "green" && "bg-green-100 text-green-700",
           color === "red" && "bg-red-100 text-red-700",
           color === "blue" && "bg-blue-100 text-blue-700",
           color === "orange" && "bg-orange-100 text-orange-700",
           color === "grey" && "bg-gray-100 text-gray-700",
           color === "purple" && "bg-purple-100 text-purple-700",
+          // NUTA Accent color
+          color === "accent" && "bg-[#D4A574] text-[#2C1810]",
           className
         )}
         {...props}
@@ -157,7 +161,7 @@ export const IconBadge = forwardRef<HTMLSpanElement, IconBadgeProps>(
       <span
         ref={ref}
         className={clsx(
-          "inline-flex items-center justify-center rounded-full bg-gray-100 p-1",
+          "inline-flex items-center justify-center rounded-full bg-[#D4A574]/20 p-2",
           className
         )}
         {...props}
@@ -178,7 +182,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          "inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2",
+          "inline-flex items-center justify-center rounded-full p-2.5 hover:bg-[#FFF8F0] text-[#5C4033] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8B4513]",
           className
         )}
         {...props}
@@ -198,7 +202,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     return (
       <label
         ref={ref}
-        className={clsx("text-sm font-medium", className)}
+        className={clsx("text-sm font-medium text-[#2C1810]", className)}
         {...props}
       >
         {children}
@@ -208,7 +212,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
 )
 Label.displayName = "Label"
 
-// Input Component
+// Input Component - NUTA Theme
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string
 }
@@ -216,12 +220,12 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1.5">
         {label && <Label>{label}</Label>}
         <input
           ref={ref}
           className={clsx(
-            "flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-11 w-full rounded-xl border-2 border-[#E8D5C4] bg-white px-4 py-2 text-sm placeholder:text-[#5C4033]/50 focus:outline-none focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/20 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
             className
           )}
           {...props}
@@ -257,7 +261,7 @@ const TableHeader = forwardRef<HTMLTableSectionElement, TableHeaderProps>(
     return (
       <thead
         ref={ref}
-        className={clsx("[&_tr]:border-b", className)}
+        className={clsx("[&_tr]:border-b border-[#E8D5C4]", className)}
         {...props}
       >
         {children}
@@ -292,7 +296,7 @@ const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
       <tr
         ref={ref}
         className={clsx(
-          "border-b transition-colors hover:bg-gray-50",
+          "border-b border-[#E8D5C4] transition-colors hover:bg-[#FFF8F0]",
           className
         )}
         {...props}
@@ -312,7 +316,7 @@ const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
       <th
         ref={ref}
         className={clsx(
-          "h-12 px-4 text-left align-middle font-medium text-gray-500 [&:has([role=checkbox])]:pr-0",
+          "h-12 px-4 text-left align-middle font-medium text-[#5C4033] [&:has([role=checkbox])]:pr-0",
           className
         )}
         {...props}
@@ -332,7 +336,7 @@ const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
       <td
         ref={ref}
         className={clsx(
-          "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+          "p-4 align-middle text-[#2C1810] [&:has([role=checkbox])]:pr-0",
           className
         )}
         {...props}
@@ -361,7 +365,7 @@ const RadioGroupRoot = forwardRef<HTMLDivElement, RadioGroupProps>(
     return (
       <div
         ref={ref}
-        className={clsx("flex flex-col gap-2", className)}
+        className={clsx("flex flex-col gap-3", className)}
         {...props}
       >
         {children}
@@ -378,13 +382,13 @@ type RadioGroupItemProps = InputHTMLAttributes<HTMLInputElement> & {
 const RadioGroupItem = forwardRef<HTMLInputElement, RadioGroupItemProps>(
   ({ className, label, id, ...props }, ref) => {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <input
           ref={ref}
           type="radio"
           id={id}
           className={clsx(
-            "h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900",
+            "h-5 w-5 border-2 border-[#D4A574] text-[#8B4513] focus:ring-[#8B4513] focus:ring-offset-2",
             className
           )}
           {...props}
@@ -400,7 +404,7 @@ export const RadioGroup = Object.assign(RadioGroupRoot, {
   Item: RadioGroupItem,
 })
 
-// Checkbox Component
+// Checkbox Component - NUTA Theme
 type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
   label?: string
 }
@@ -408,13 +412,13 @@ type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & {
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ className, label, id, ...props }, ref) => {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <input
           ref={ref}
           type="checkbox"
           id={id}
           className={clsx(
-            "h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900",
+            "h-5 w-5 rounded-lg border-2 border-[#D4A574] text-[#8B4513] focus:ring-[#8B4513] focus:ring-offset-2",
             className
           )}
           {...props}

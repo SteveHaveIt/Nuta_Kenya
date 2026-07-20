@@ -2,6 +2,31 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/* NUTA Theme Custom Properties */
+:root {
+  /* Primary Colors - Warm Peanut Brown */
+  --nuta-primary: #8B4513;
+  --nuta-primary-dark: #6B3410;
+  --nuta-primary-light: #A0522D;
+  
+  /* Accent Colors - Gold */
+  --nuta-accent: #D4A574;
+  --nuta-accent-dark: #C4956A;
+  --nuta-accent-light: #E8D5C4;
+  
+  /* Neutral Colors - Earth Tones */
+  --nuta-cream: #FFF8F0;
+  --nuta-cream-dark: #FAF0E6;
+  --nuta-wheat: #F5DEB3;
+  --nuta-brown-dark: #2C1810;
+  --nuta-brown-medium: #5C4033;
+  
+  /* Semantic Colors */
+  --nuta-success: #22C55E;
+  --nuta-warning: #F59E0B;
+  --nuta-error: #EF4444;
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -35,9 +60,9 @@
   select:-webkit-autofill,
   select:-webkit-autofill:hover,
   select:-webkit-autofill:focus {
-    border: 1px solid #212121;
-    -webkit-text-fill-color: #212121;
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    border: 1px solid #8B4513;
+    -webkit-text-fill-color: #2C1810;
+    -webkit-box-shadow: 0 0 0px 1000px #FFF8F0 inset;
     transition: background-color 5000s ease-in-out 0s;
   }
 
@@ -47,17 +72,58 @@
   input[type="search"]::-webkit-search-results-decoration {
     -webkit-appearance: none;
   }
+
+  /* NUTA Custom Utilities */
+  .bg-nuta-primary {
+    background-color: var(--nuta-primary);
+  }
+  
+  .bg-nuta-cream {
+    background-color: var(--nuta-cream);
+  }
+  
+  .text-nuta-primary {
+    color: var(--nuta-primary);
+  }
+  
+  .text-nuta-brown {
+    color: var(--nuta-brown-dark);
+  }
+  
+  .border-nuta-primary {
+    border-color: var(--nuta-primary);
+  }
+
+  /* Smooth transitions for hover effects */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(139, 69, 19, 0.15);
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-nuta {
+    background: linear-gradient(135deg, var(--nuta-cream) 0%, var(--nuta-cream-dark) 100%);
+  }
+  
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--nuta-primary) 0%, var(--nuta-primary-light) 100%);
+  }
 }
 
 @layer components {
   .content-container {
-    @apply max-w-[1440px] w-full mx-auto px-6;
+    @apply max-w-[1440px] w-full mx-auto px-4 md:px-6;
   }
 
   .contrast-btn {
-    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
+    @apply px-6 py-2.5 border-2 border-nuta-primary text-nuta-primary rounded-full hover:bg-nuta-primary hover:text-white transition-all duration-300 font-medium;
   }
 
+  /* NUTA Text Classes */
   .text-xsmall-regular {
     @apply text-[10px] leading-4 font-normal;
   }
@@ -108,5 +174,73 @@
 
   .text-3xl-semi {
     @apply text-[32px] leading-[44px] font-semibold;
+  }
+
+  /* NUTA Component Overrides */
+  
+  /* Smooth rounded cards */
+  .nuta-card {
+    @apply bg-white rounded-3xl shadow-sm overflow-hidden transition-all duration-300;
+  }
+  
+  .nuta-card:hover {
+    @apply shadow-xl -translate-y-1;
+  }
+  
+  /* Primary button style */
+  .btn-primary {
+    @apply bg-nuta-primary text-white px-6 py-3 rounded-full font-medium transition-all duration-300;
+  }
+  
+  .btn-primary:hover {
+    @apply bg-nuta-primary-dark shadow-lg;
+  }
+  
+  /* Secondary button style */
+  .btn-secondary {
+    @apply bg-white text-nuta-primary border-2 border-nuta-primary px-6 py-3 rounded-full font-medium transition-all duration-300;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-nuta-cream;
+  }
+
+  /* Form inputs */
+  .nuta-input {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-nuta-accent-light bg-white text-nuta-brown focus:outline-none focus:border-nuta-primary focus:ring-2 focus:ring-nuta-primary/20 transition-all duration-200;
+  }
+  
+  .nuta-input::placeholder {
+    @apply text-nuta-brown/50;
+  }
+
+  /* Badge styles */
+  .badge-primary {
+    @apply px-3 py-1 bg-nuta-primary text-white text-xs font-medium rounded-full;
+  }
+  
+  .badge-accent {
+    @apply px-3 py-1 bg-nuta-accent text-nuta-brown-dark text-xs font-medium rounded-full;
+  }
+  
+  .badge-success {
+    @apply px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full;
+  }
+
+  /* Section headers */
+  .section-header {
+    @apply text-center mb-12;
+  }
+  
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-nuta-brown mb-4;
+  }
+  
+  .section-subtitle {
+    @apply text-nuta-brown-medium max-w-2xl mx-auto;
+  }
+  
+  .section-label {
+    @apply text-nuta-primary font-medium text-sm tracking-wide uppercase;
   }
 }
