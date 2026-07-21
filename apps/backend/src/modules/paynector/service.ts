@@ -22,14 +22,17 @@ import {
   UpdatePaymentInput,
   UpdatePaymentOutput,
 } from "@medusajs/framework/types"
+import { PaymentActions } from "@medusajs/framework/types"
 
 // Type definitions for webhook handling
 type WebhookInput = {
-  rawData: unknown
+  data: Record<string, unknown>
+  rawData: string | Buffer<ArrayBufferLike>
+  headers: Record<string, unknown>
 }
 
 type WebhookResult = {
-  action: string
+  action: PaymentActions
   data: Record<string, unknown>
 }
 
@@ -277,7 +280,7 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
     input: WebhookInput
   ): Promise<WebhookResult> {
     const rawPayload = input.rawData
-    const body = (typeof rawPayload === "string" ? JSON.parse(rawPayload) : rawPayload) as Record<string, unknown>
+    const body = (typeof rawPayload === "string" ? JSON.parse(rawPayload) : {}) as Record<string, unknown>
     const event = body.event as string
 
     switch (event) {
@@ -286,8 +289,8 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
         return {
           action: "authorized",
           data: {
-            session_id: body.id as string,
-            amount: body.amount as number,
+            session_id: body.id as string || "",
+            amount: body.amount as number || 0,
           },
         }
       case "checkout.failed":
@@ -295,16 +298,16 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
         return {
           action: "failed",
           data: {
-            session_id: body.id as string,
-            amount: body.amount as number,
+            session_id: body.id as string || "",
+            amount: body.amount as number || 0,
           },
         }
       default:
         return {
           action: "not_supported",
           data: {
-            session_id: body.id as string,
-            amount: body.amount as number,
+            session_id: "",
+            amount: 0,
           },
         }
     }

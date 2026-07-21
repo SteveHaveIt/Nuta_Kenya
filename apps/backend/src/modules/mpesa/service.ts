@@ -22,14 +22,17 @@ import {
   UpdatePaymentInput,
   UpdatePaymentOutput,
 } from "@medusajs/framework/types"
+import { PaymentActions } from "@medusajs/framework/types"
 
 // Type definitions for webhook handling
 type WebhookInput = {
-  rawData: unknown
+  data: Record<string, unknown>
+  rawData: string | Buffer<ArrayBufferLike>
+  headers: Record<string, unknown>
 }
 
 type WebhookResult = {
-  action: string
+  action: PaymentActions
   data: Record<string, unknown>
 }
 
