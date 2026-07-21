@@ -2,9 +2,5 @@
   "name": "@nuta-kenya/payment-providers",
   "version": "1.0.0",
   "description": "Custom payment providers for NUTA Kenya store",
-  "main": "index.ts",
-  "dependencies": {
-    "@medusajs/framework": "*",
-    "@medusajs/framework/utils": "*"
-  }
+  "main": "index.ts"
 }
