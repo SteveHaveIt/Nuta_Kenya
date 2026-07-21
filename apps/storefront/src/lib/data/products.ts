@@ -58,6 +58,7 @@ export const listProducts = async ({
 
   const next = {
     ...(await getCacheOptions("products")),
+    revalidate: 60, // Revalidate every 60 seconds
   }
 
   return sdk.client
