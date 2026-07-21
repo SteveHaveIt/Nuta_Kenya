@@ -13,7 +13,6 @@ import {
   DeletePaymentOutput,
   GetPaymentStatusInput,
   GetPaymentStatusOutput,
-  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   RefundPaymentInput,
@@ -22,8 +21,11 @@ import {
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
-  WebhookActionResult,
 } from "@medusajs/framework/types"
+import {
+  GetWebhookActionAndDataInput,
+  WebhookActionResult,
+} from "@medusajs/types"
 
 export type PaynectorOptions = {
   api_key: string
