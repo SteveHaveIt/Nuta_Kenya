@@ -1,6 +1,6 @@
 "use client"
 import { RadioGroup } from "@headlessui/react"
-import { isStripeLike, paymentInfoMap } from "@lib/constants"
+import { isMpesa, isPaynector, isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import ErrorMessage from "@modules/checkout/components/error-message"
@@ -47,9 +47,13 @@ const Payment = ({
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
-    if (isStripeLike(method)) {
+    
+    // Initiate payment session for all payment methods
+    if (method) {
       await initiatePaymentSession(cart, {
         provider_id: method,
+      }).catch((err) => {
+        setError(err.message)
       })
     }
   }
@@ -80,26 +84,21 @@ const Payment = ({
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      const shouldInputCard =
-        isStripeLike(selectedPaymentMethod) && !activeSession
-
       const checkActiveSession =
         activeSession?.provider_id === selectedPaymentMethod
 
-      if (!checkActiveSession) {
+      if (!checkActiveSession || !activeSession) {
         await initiatePaymentSession(cart, {
           provider_id: selectedPaymentMethod,
         })
       }
 
-      if (!shouldInputCard) {
-        return router.push(
-          pathname + "?" + createQueryString("step", "review"),
-          {
-            scroll: false,
-          }
-        )
-      }
+      return router.push(
+        pathname + "?" + createQueryString("step", "review"),
+        {
+          scroll: false,
+        }
+      )
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
     } finally {
@@ -110,6 +109,11 @@ const Payment = ({
   useEffect(() => {
     setError(null)
   }, [isOpen])
+
+  // Filter out payment methods that are not Paynector or M-PESA
+  const filteredPaymentMethods = availablePaymentMethods?.filter(
+    (method) => isPaynector(method.id) || isMpesa(method.id)
+  )
 
   return (
     <div className="bg-white">
@@ -141,34 +145,32 @@ const Payment = ({
       </div>
       <div>
         <div className={isOpen ? "block" : "hidden"}>
-          {!paidByGiftcard && availablePaymentMethods?.length && (
+          {!paidByGiftcard && filteredPaymentMethods?.length && (
             <>
               <RadioGroup
                 value={selectedPaymentMethod}
                 onChange={(value: string) => setPaymentMethod(value)}
               >
-                {availablePaymentMethods.map((paymentMethod) => (
+                {filteredPaymentMethods.map((paymentMethod) => (
                   <div key={paymentMethod.id}>
-                    {isStripeLike(paymentMethod.id) ? (
-                      <StripeCardContainer
-                        paymentProviderId={paymentMethod.id}
-                        selectedPaymentOptionId={selectedPaymentMethod}
-                        paymentInfoMap={paymentInfoMap}
-                        setCardBrand={setCardBrand}
-                        setError={setError}
-                        setCardComplete={setCardComplete}
-                      />
-                    ) : (
-                      <PaymentContainer
-                        paymentInfoMap={paymentInfoMap}
-                        paymentProviderId={paymentMethod.id}
-                        selectedPaymentOptionId={selectedPaymentMethod}
-                      />
-                    )}
+                    <PaymentContainer
+                      paymentInfoMap={paymentInfoMap}
+                      paymentProviderId={paymentMethod.id}
+                      selectedPaymentOptionId={selectedPaymentMethod}
+                    />
                   </div>
                 ))}
               </RadioGroup>
             </>
+          )}
+
+          {(!filteredPaymentMethods?.length || filteredPaymentMethods?.length === 0) && (
+            <div className="text-ui-fg-muted py-4">
+              <Text>No payment methods available for this region.</Text>
+              <Text className="text-sm mt-2">
+                Please contact support or ensure Paynector and M-PESA are configured.
+              </Text>
+            </div>
           )}
 
           {paidByGiftcard && (
@@ -196,14 +198,11 @@ const Payment = ({
             onClick={handleSubmit}
             isLoading={isLoading}
             disabled={
-              (isStripeLike(selectedPaymentMethod) && !cardComplete) ||
-              (!selectedPaymentMethod && !paidByGiftcard)
+              !selectedPaymentMethod && !paidByGiftcard
             }
             data-testid="submit-payment-button"
           >
-            {!activeSession && isStripeLike(selectedPaymentMethod)
-              ? " Enter card details"
-              : "Continue to review"}
+            Continue to review
           </Button>
         </div>
 
@@ -236,8 +235,10 @@ const Payment = ({
                     )}
                   </Container>
                   <Text>
-                    {isStripeLike(selectedPaymentMethod) && cardBrand
-                      ? cardBrand
+                    {isPaynector(selectedPaymentMethod)
+                      ? "Card/Mobile Money"
+                      : isMpesa(selectedPaymentMethod)
+                      ? "M-PESA Mobile Money"
                       : "Another step will appear"}
                   </Text>
                 </div>

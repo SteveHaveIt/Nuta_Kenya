@@ -13,5 +13,29 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET,
       cookieSecret: process.env.COOKIE_SECRET,
     }
-  }
+  },
+  modules: {
+    paynector: {
+      resolve: "./src/modules/paynector",
+      options: {
+        api_key: process.env.PAYNECTOR_API_KEY,
+        environment: process.env.PAYNECTOR_ENVIRONMENT || "test",
+      },
+    },
+    mpesa: {
+      resolve: "./src/modules/mpesa",
+      options: {
+        consumer_key: process.env.MPESA_CONSUMER_KEY,
+        consumer_secret: process.env.MPESA_CONSUMER_SECRET,
+        shortcode: process.env.MPESA_SHORTCODE,
+        passkey: process.env.MPESA_PASSKEY,
+        initiator_name: process.env.MPESA_INITIATOR_NAME,
+        security_credential: process.env.MPESA_SECURITY_CREDENTIAL,
+        environment: process.env.MPESA_ENVIRONMENT || "sandbox",
+        callback_url: process.env.MPESA_CALLBACK_URL,
+        timeout_url: process.env.MPESA_TIMEOUT_URL,
+        result_url: process.env.MPESA_RESULT_URL,
+      },
+    },
+  },
 })
