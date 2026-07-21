@@ -11,6 +11,9 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
+  GetPaymentStatusInput,
+  GetPaymentStatusOutput,
+  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   RefundPaymentInput,
@@ -19,6 +22,7 @@ import {
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
+  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type MpesaOptions = {
@@ -371,6 +375,61 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
+  }
+
+  async getPaymentStatus(
+    input: GetPaymentStatusInput
+  ): Promise<GetPaymentStatusOutput> {
+    return {
+      status: "pending",
+      data: input.data || {},
+    }
+  }
+
+  async getWebhookActionAndData(
+    input: GetWebhookActionAndDataInput
+  ): Promise<WebhookActionResult> {
+    const rawPayload = input.rawData
+    const body = (typeof rawPayload === "string" ? JSON.parse(rawPayload) : rawPayload) as Record<string, unknown>
+
+    if ((body as any).Body?.stkCallback) {
+      const callback = (body as any).Body.stkCallback
+      const resultCode = callback.ResultCode
+
+      if (resultCode === 0) {
+        return {
+          action: "authorized",
+          data: {
+            session_id: callback.CheckoutRequestID as string,
+            amount: 0,
+          },
+        }
+      } else if (resultCode === 1032) {
+        return {
+          action: "canceled",
+          data: {
+            session_id: callback.CheckoutRequestID as string,
+            amount: 0,
+          },
+        }
+      } else {
+        return {
+          action: "failed",
+          data: {
+            session_id: callback.CheckoutRequestID as string,
+            amount: 0,
+          },
+        }
+      }
+    }
+
+    return {
+      action: "not_supported",
+      data: {
+        session_id: "",
+        amount: 0,
+      },
+    }
   }
 }
 

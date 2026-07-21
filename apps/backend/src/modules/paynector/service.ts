@@ -11,15 +11,18 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
+  GetPaymentStatusInput,
+  GetPaymentStatusOutput,
+  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
-  PaymentSessionStatus,
   RefundPaymentInput,
   RefundPaymentOutput,
   RetrievePaymentInput,
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
+  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type PaynectorOptions = {
@@ -242,6 +245,61 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
+  }
+
+  async getPaymentStatus(
+    input: GetPaymentStatusInput
+  ): Promise<GetPaymentStatusOutput> {
+    const sessionId = input.data?.session_id as string | undefined
+    
+    if (!sessionId) {
+      return {
+        status: "pending",
+        data: input.data || {},
+      }
+    }
+
+    return {
+      status: "pending",
+      data: input.data || {},
+    }
+  }
+
+  async getWebhookActionAndData(
+    input: GetWebhookActionAndDataInput
+  ): Promise<WebhookActionResult> {
+    const rawPayload = input.rawData
+    const body = (typeof rawPayload === "string" ? JSON.parse(rawPayload) : rawPayload) as Record<string, unknown>
+    const event = body.event as string
+
+    switch (event) {
+      case "checkout.completed":
+      case "payment.success":
+        return {
+          action: "authorized",
+          data: {
+            session_id: body.id as string,
+            amount: body.amount as number,
+          },
+        }
+      case "checkout.failed":
+      case "payment.failed":
+        return {
+          action: "failed",
+          data: {
+            session_id: body.id as string,
+            amount: body.amount as number,
+          },
+        }
+      default:
+        return {
+          action: "not_supported",
+          data: {
+            session_id: body.id as string,
+            amount: body.amount as number,
+          },
+        }
+    }
   }
 }
 
