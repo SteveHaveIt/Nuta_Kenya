@@ -22,10 +22,16 @@ import {
   UpdatePaymentInput,
   UpdatePaymentOutput,
 } from "@medusajs/framework/types"
-import {
-  GetWebhookActionAndDataInput,
-  WebhookActionResult,
-} from "@medusajs/types"
+
+// Type definitions for webhook handling
+type WebhookInput = {
+  rawData: unknown
+}
+
+type WebhookResult = {
+  action: string
+  data: Record<string, unknown>
+}
 
 export type PaynectorOptions = {
   api_key: string
@@ -268,8 +274,8 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
   }
 
   async getWebhookActionAndData(
-    input: GetWebhookActionAndDataInput
-  ): Promise<WebhookActionResult> {
+    input: WebhookInput
+  ): Promise<WebhookResult> {
     const rawPayload = input.rawData
     const body = (typeof rawPayload === "string" ? JSON.parse(rawPayload) : rawPayload) as Record<string, unknown>
     const event = body.event as string
