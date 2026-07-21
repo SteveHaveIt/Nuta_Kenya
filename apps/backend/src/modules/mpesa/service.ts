@@ -11,7 +11,6 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
-  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   RefundPaymentInput,
@@ -20,7 +19,6 @@ import {
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
-  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type MpesaOptions = {
@@ -192,7 +190,7 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
   async initiatePayment(
     input: InitiatePaymentInput
   ): Promise<InitiatePaymentOutput> {
-    const { amount, currency_code, customer } = input
+    const { amount, currency_code, context } = input
 
     const numericAmount = typeof amount === "object" && "numeric" in amount 
       ? amount.numeric 
@@ -200,7 +198,7 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
         ? amount.value 
         : amount
 
-    const phone = customer?.phone || this.extractPhoneFromCustomer(customer)
+    const phone = context?.phone || this.extractPhoneFromCustomer(context)
     
     if (!phone) {
       throw new MedusaError(
@@ -380,62 +378,6 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
-  }
-
-  async getWebhookActionAndData(
-    input: GetWebhookActionAndDataInput
-  ): Promise<WebhookActionResult> {
-    const rawPayload = input.rawData
-    const body = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload
-
-    if (body.Body?.stkCallback) {
-      const callback = body.Body.stkCallback
-      const resultCode = callback.ResultCode
-
-      if (resultCode === 0) {
-        const item = callback.CallbackMetadata?.Item?.find(
-          (i: any) => i.Name === "Amount"
-        )
-        return {
-          action: "authorized",
-          data: {
-            merchant_request_id: callback.MerchantRequestID,
-            checkout_request_id: callback.CheckoutRequestID,
-            status: "captured",
-            amount: item?.Value,
-          },
-        }
-      } else if (resultCode === 1032) {
-        return {
-          action: "canceled",
-          data: {
-            merchant_request_id: callback.MerchantRequestID,
-            checkout_request_id: callback.CheckoutRequestID,
-            status: "cancelled",
-            result_code: resultCode,
-          },
-        }
-      } else {
-        return {
-          action: "failed",
-          data: {
-            merchant_request_id: callback.MerchantRequestID,
-            checkout_request_id: callback.CheckoutRequestID,
-            status: "failed",
-            result_code: resultCode,
-            result_desc: callback.ResultDesc,
-          },
-        }
-      }
-    }
-
-    return {
-      action: "not_supported",
-      data: {
-        session_id: body.CheckoutRequestID,
-        amount: body.amount,
-      },
-    }
   }
 }
 

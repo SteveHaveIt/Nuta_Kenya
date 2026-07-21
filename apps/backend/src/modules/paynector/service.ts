@@ -11,7 +11,6 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
-  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   RefundPaymentInput,
@@ -20,7 +19,6 @@ import {
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
-  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type PaynectorOptions = {
@@ -63,7 +61,7 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
   async initiatePayment(
     input: InitiatePaymentInput
   ): Promise<InitiatePaymentOutput> {
-    const { amount, currency_code, customer } = input
+    const { amount, currency_code, context } = input
 
     const numericAmount = typeof amount === "object" && "numeric" in amount 
       ? amount.numeric 
@@ -71,17 +69,17 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
         ? amount.value 
         : amount
 
+    const customerEmail = context?.email
+    const customerPhone = context?.phone
+
     const payload = {
       amount: numericAmount,
       currency: currency_code?.toUpperCase() || "KES",
-      email: customer?.email,
-      phone: customer?.phone || "",
+      email: customerEmail,
+      phone: customerPhone || "",
       description: `Order payment - ${currency_code}`,
       callback_url: `${process.env.BASE_URL}/api/hooks/paynector`,
       reference: `ORDER-${Date.now()}`,
-      metadata: {
-        customer_id: customer?.id,
-      },
     }
 
     try {
@@ -248,51 +246,6 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
-  }
-
-  async getWebhookActionAndData(
-    input: GetWebhookActionAndDataInput
-  ): Promise<WebhookActionResult> {
-    const rawPayload = input.rawData
-    const body = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload
-    const event = body.event as string
-
-    switch (event) {
-      case "checkout.completed":
-      case "payment.success":
-        return {
-          action: "authorized",
-          data: {
-            session_id: body.data?.id || body.id,
-            amount: body.data?.amount || body.amount,
-          },
-        }
-      case "checkout.failed":
-      case "payment.failed":
-        return {
-          action: "failed",
-          data: {
-            session_id: body.data?.id || body.id,
-            amount: body.data?.amount || body.amount,
-          },
-        }
-      case "checkout.cancelled":
-        return {
-          action: "canceled",
-          data: {
-            session_id: body.data?.id || body.id,
-            amount: body.data?.amount || body.amount,
-          },
-        }
-      default:
-        return {
-          action: "not_supported",
-          data: {
-            session_id: body.id,
-            amount: body.amount,
-          },
-        }
-    }
   }
 }
 
