@@ -9,7 +9,7 @@ type MedusaError = {
   config?: { url: string; baseURL: string }
 }
 
-export default function medusaError(error: unknown): never {
+export default function medusaError(error: unknown): Error {
   const err = error as MedusaError
   if (err.response) {
     const u = new URL(err.config?.url ?? "", err.config?.baseURL ?? "")
@@ -24,10 +24,10 @@ export default function medusaError(error: unknown): never {
         ? data.message || String(data)
         : data
 
-    throw new Error(message.charAt(0).toUpperCase() + message.slice(1) + ".")
+    return new Error(message.charAt(0).toUpperCase() + message.slice(1) + ".")
   } else if (err.request) {
-    throw new Error("No response received: " + String(err.request))
+    return new Error("No response received: " + String(err.request))
   } else {
-    throw new Error("Error setting up the request: " + err.message)
+    return new Error("Error setting up the request: " + err.message)
   }
 }

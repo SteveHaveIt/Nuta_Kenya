@@ -50,11 +50,14 @@ const Payment = ({
     
     // Initiate payment session for all payment methods
     if (method) {
-      await initiatePaymentSession(cart, {
-        provider_id: method,
-      }).catch((err) => {
-        setError(err.message)
-      })
+      try {
+        await initiatePaymentSession(cart, {
+          provider_id: method,
+        })
+      } catch (err: any) {
+        console.error("Payment session error:", err)
+        setError(err?.message || err?.toString() || "Failed to initiate payment session")
+      }
     }
   }
 
@@ -88,9 +91,16 @@ const Payment = ({
         activeSession?.provider_id === selectedPaymentMethod
 
       if (!checkActiveSession || !activeSession) {
-        await initiatePaymentSession(cart, {
-          provider_id: selectedPaymentMethod,
-        })
+        try {
+          await initiatePaymentSession(cart, {
+            provider_id: selectedPaymentMethod,
+          })
+        } catch (initErr: any) {
+          console.error("Failed to initiate payment session:", initErr)
+          setError(initErr?.message || "Failed to initialize payment. Please try again.")
+          setIsLoading(false)
+          return
+        }
       }
 
       return router.push(
