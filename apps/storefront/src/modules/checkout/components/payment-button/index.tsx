@@ -24,19 +24,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     !cart.email ||
     (cart.shipping_methods?.length ?? 0) < 1
 
-  // Get the pending payment session
-  const paymentSession = cart.payment_collection?.payment_sessions?.find(
-    (s) => s.status === "pending"
-  )
-
-  // If there's a payment collection with sessions, show appropriate button
-  const hasPaymentSessions = cart.payment_collection?.payment_sessions && 
-    cart.payment_collection.payment_sessions.length > 0
+  const paymentSession = cart.payment_collection?.payment_sessions?.[0]
 
   switch (true) {
     case isPaynector(paymentSession?.provider_id):
-    case hasPaymentSessions && !isMpesa(paymentSession?.provider_id) && !isPaynector(paymentSession?.provider_id):
-      // Show Paynector button if it's paynector OR if there are sessions but none detected
       return (
         <PaynectorPaymentButton
           notReady={notReady}
