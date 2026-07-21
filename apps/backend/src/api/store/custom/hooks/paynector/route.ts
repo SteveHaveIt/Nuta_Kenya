@@ -1,6 +1,4 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { Modules } from "@medusajs/framework/utils"
-import { PaymentProviderService } from "@medusajs/medusa"
 
 /**
  * Paynector Webhook Handler
@@ -13,15 +11,10 @@ export async function POST(
   res: MedusaResponse
 ): Promise<void> {
   try {
-    const payload = req.body
+    const payload = req.body as Record<string, unknown>
     
     // Log the webhook payload for debugging
     console.log("Paynector webhook received:", JSON.stringify(payload, null, 2))
-
-    // Get the Paynector payment provider service
-    const paymentProviderService: PaymentProviderService = req.scope.resolve(
-      Modules.PAYMENT
-    )
 
     // Extract event type from payload
     const event = payload.event as string

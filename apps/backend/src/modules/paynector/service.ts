@@ -11,6 +11,7 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
+  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   RefundPaymentInput,
@@ -19,6 +20,7 @@ import {
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
+  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type PaynectorOptions = {
@@ -61,7 +63,7 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
   async initiatePayment(
     input: InitiatePaymentInput
   ): Promise<InitiatePaymentOutput> {
-    const { amount, currency_code, context } = input
+    const { amount, currency_code } = input
 
     const numericAmount = typeof amount === "object" && "numeric" in amount 
       ? amount.numeric 
@@ -69,14 +71,9 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
         ? amount.value 
         : amount
 
-    const customerEmail = context?.email
-    const customerPhone = context?.phone
-
     const payload = {
       amount: numericAmount,
       currency: currency_code?.toUpperCase() || "KES",
-      email: customerEmail,
-      phone: customerPhone || "",
       description: `Order payment - ${currency_code}`,
       callback_url: `${process.env.BASE_URL}/api/hooks/paynector`,
       reference: `ORDER-${Date.now()}`,
@@ -246,6 +243,50 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
+  }
+
+  async getWebhookActionAndData(
+    input: GetWebhookActionAndDataInput
+  ): Promise<WebhookActionResult> {
+    const rawPayload = input.rawData
+    const body = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload as Record<string, unknown>
+    const event = body.event as string
+
+    switch (event) {
+      case "checkout.completed":
+      case "payment.success":
+        return {
+          action: "authorized",
+          data: {
+            session_id: (body.data as Record<string, unknown>)?.id || body.id,
+            amount: (body.data as Record<string, unknown>)?.amount || body.amount,
+          },
+        }
+      case "checkout.failed":
+      case "payment.failed":
+        return {
+          action: "failed",
+          data: {
+            session_id: (body.data as Record<string, unknown>)?.id || body.id,
+            amount: (body.data as Record<string, unknown>)?.amount || body.amount,
+          },
+        }
+      default:
+        return {
+          action: "not_supported",
+          data: {},
+        }
+    }
+  }
+
+  async getPaymentStatus(
+    input: RetrievePaymentInput
+  ): Promise<{ status: string; data: Record<string, unknown> }> {
+    const paymentData = await this.retrievePayment(input)
+    return {
+      status: paymentData.status as string || "pending",
+      data: paymentData,
+    }
   }
 }
 

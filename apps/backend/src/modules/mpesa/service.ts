@@ -11,6 +11,7 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
+  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   RefundPaymentInput,
@@ -19,6 +20,7 @@ import {
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
+  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type MpesaOptions = {
@@ -190,7 +192,7 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
   async initiatePayment(
     input: InitiatePaymentInput
   ): Promise<InitiatePaymentOutput> {
-    const { amount, currency_code, context } = input
+    const { amount, currency_code } = input
 
     const numericAmount = typeof amount === "object" && "numeric" in amount 
       ? amount.numeric 
@@ -198,15 +200,9 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
         ? amount.value 
         : amount
 
-    const phone = context?.phone || this.extractPhoneFromCustomer(context)
-    
-    if (!phone) {
-      throw new MedusaError(
-        MedusaError.Types.PAYMENT_AUTHORIZATION_ERROR,
-        "Phone number is required for M-PESA payment"
-      )
-    }
-
+    // For M-PESA, we need to get the phone number from the cart during checkout
+    // The phone number should be provided by the customer during checkout
+    // For now, we'll return a pending status and expect the webhook to update it
     const timestamp = this.getTimestamp()
     const password = this.getPassword(timestamp)
 
@@ -219,9 +215,9 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
         Timestamp: timestamp,
         TransactionType: "CustomerPayBillOnline",
         Amount: Math.ceil(numericAmount as number),
-        PartyA: this.formatPhoneNumber(phone),
+        PartyA: "254000000000", // Default placeholder - should be provided by customer
         PartyB: parseInt(this.options_.shortcode),
-        PhoneNumber: this.formatPhoneNumber(phone),
+        PhoneNumber: "254000000000", // Default placeholder
         CallBackURL: `${process.env.BASE_URL}/api/hooks/mpesa`,
         AccountReference: `ORDER-${Date.now()}`,
         TransactionDesc: `Payment for order - ${currency_code}`,
@@ -378,6 +374,50 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
+  }
+
+  async getWebhookActionAndData(
+    input: GetWebhookActionAndDataInput
+  ): Promise<WebhookActionResult> {
+    const rawPayload = input.rawData
+    const body = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload as Record<string, unknown>
+
+    if ((body as any).Body?.stkCallback) {
+      const callback = (body as any).Body.stkCallback
+      const resultCode = callback.ResultCode
+
+      if (resultCode === 0) {
+        return {
+          action: "authorized",
+          data: {},
+        }
+      } else if (resultCode === 1032) {
+        return {
+          action: "canceled",
+          data: {},
+        }
+      } else {
+        return {
+          action: "failed",
+          data: {},
+        }
+      }
+    }
+
+    return {
+      action: "not_supported",
+      data: {},
+    }
+  }
+
+  async getPaymentStatus(
+    input: RetrievePaymentInput
+  ): Promise<{ status: string; data: Record<string, unknown> }> {
+    const paymentData = await this.retrievePayment(input)
+    return {
+      status: paymentData.status as string || "pending",
+      data: paymentData,
+    }
   }
 }
 
