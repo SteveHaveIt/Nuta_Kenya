@@ -11,6 +11,16 @@ export const paymentInfoMap: Record<
     title: "Manual Payment",
     icon: <CreditCard />,
   },
+  // Paynector (Card/Mobile Money for Kenya)
+  pp_paynector_paynector: {
+    title: "Paynector (Card/Mobile)",
+    icon: <CreditCard />,
+  },
+  // M-PESA (Mobile Money for Kenya)
+  pp_mpesa_mpesa: {
+    title: "M-PESA",
+    icon: <CreditCard />,
+  },
 }
 
 // This only checks if it is native stripe or medusa payments for card payments
@@ -18,6 +28,14 @@ export const isStripeLike = (providerId?: string) => {
   return (
     providerId?.startsWith("pp_stripe_") || providerId?.startsWith("pp_medusa-")
   )
+}
+
+export const isPaynector = (providerId?: string) => {
+  return providerId === "pp_paynector_paynector"
+}
+
+export const isMpesa = (providerId?: string) => {
+  return providerId === "pp_mpesa_mpesa"
 }
 
 export const isPaypal = (providerId?: string) => {

@@ -13,5 +13,22 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET,
       cookieSecret: process.env.COOKIE_SECRET,
     }
-  }
+  },
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/paynector",
+            id: "paynector",
+            options: {
+              api_key: process.env.PAYNECTOR_API_KEY,
+              environment: process.env.PAYNECTOR_ENVIRONMENT || "test",
+            },
+          },
+        ],
+      },
+    },
+  ],
 })
