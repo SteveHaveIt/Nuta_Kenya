@@ -5,11 +5,30 @@ import { Heading, Text, clx } from "@modules/common/components/ui"
 import PaymentButton from "../payment-button"
 import { useSearchParams } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
+import { useEffect, useState } from "react"
+import { retrieveCart } from "@lib/data/cart"
 
-const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
+const Review = ({ cart: initialCart }: { cart: HttpTypes.StoreCart }) => {
   const searchParams = useSearchParams()
+  const [cart, setCart] = useState(initialCart)
+  const [isLoading, setIsLoading] = useState(false)
 
   const isOpen = searchParams.get("step") === "review"
+
+  // Refresh cart data when review step is opened
+  useEffect(() => {
+    if (isOpen) {
+      setIsLoading(true)
+      retrieveCart(initialCart.id).then((freshCart) => {
+        if (freshCart) {
+          setCart(freshCart)
+        }
+        setIsLoading(false)
+      }).catch(() => {
+        setIsLoading(false)
+      })
+    }
+  }, [isOpen, initialCart.id])
 
   const paidByGiftcard = !!(
     (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0
@@ -33,6 +52,7 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
           )}
         >
           Review
+          {isLoading && <span className="text-sm text-gray-400 ml-2">(refreshing...)</span>}
         </Heading>
       </div>
       {isOpen && previousStepsCompleted && (

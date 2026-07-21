@@ -44,6 +44,19 @@ const Payment = ({
 
   const isOpen = searchParams.get("step") === "payment"
 
+  // Auto-select Paynector if it's the only payment method and nothing is selected
+  useEffect(() => {
+    if (isOpen && filteredPaymentMethods?.length === 1 && !selectedPaymentMethod) {
+      const method = filteredPaymentMethods[0].id
+      setSelectedPaymentMethod(method)
+      initiatePaymentSession(cart, {
+        provider_id: method,
+      }).catch((err) => {
+        console.error("Auto-initiate payment error:", err)
+      })
+    }
+  }, [isOpen, filteredPaymentMethods, selectedPaymentMethod])
+
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
@@ -103,7 +116,8 @@ const Payment = ({
         }
       }
 
-      return router.push(
+      // Navigate to review step
+      router.push(
         pathname + "?" + createQueryString("step", "review"),
         {
           scroll: false,
@@ -111,7 +125,6 @@ const Payment = ({
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
-    } finally {
       setIsLoading(false)
     }
   }
