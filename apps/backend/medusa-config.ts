@@ -27,6 +27,17 @@ module.exports = defineConfig({
               environment: process.env.PAYNECTOR_ENVIRONMENT || "test",
             },
           },
+          {
+            resolve: "./src/modules/mpesa",
+            id: "mpesa",
+            options: {
+              consumer_key: process.env.MPESA_CONSUMER_KEY,
+              consumer_secret: process.env.MPESA_CONSUMER_SECRET,
+              shortcode: process.env.MPESA_SHORTCODE,
+              passkey: process.env.MPESA_PASSKEY,
+              environment: process.env.MPESA_ENVIRONMENT || "sandbox",
+            },
+          },
         ],
       },
     },
