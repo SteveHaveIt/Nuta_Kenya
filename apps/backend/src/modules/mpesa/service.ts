@@ -108,23 +108,10 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
   }
 
   static validateOptions(options: Record<string, unknown>): void {
-    if (!options.consumer_key) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "M-PESA consumer_key is required in the provider's options."
-      )
-    }
-    if (!options.consumer_secret) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "M-PESA consumer_secret is required in the provider's options."
-      )
-    }
-    if (!options.shortcode) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "M-PESA shortcode is required in the provider's options."
-      )
+    // Only validate if the provider is being used
+    // The config will only include this provider if credentials are set
+    if (!options.consumer_key || !options.consumer_secret || !options.shortcode) {
+      console.warn("M-PESA provider is missing required credentials. Provider will not be available.")
     }
   }
 

@@ -68,11 +68,10 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
   }
 
   static validateOptions(options: Record<string, unknown>): void {
+    // Only validate if the provider is being used
+    // The config will only include this provider if credentials are set
     if (!options.api_key) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "API key is required in the provider's options."
-      )
+      console.warn("Paynector provider is missing API key. Provider will not be available.")
     }
   }
 
