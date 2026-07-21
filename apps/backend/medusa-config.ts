@@ -1,9 +1,10 @@
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import { ModuleProvider } from '@medusajs/types'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 // Build providers array based on available credentials
-const paymentProviders = []
+const paymentProviders: ModuleProvider[] = []
 
 // Always include Paynector if API key is set
 if (process.env.PAYNECTOR_API_KEY) {
