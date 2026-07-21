@@ -2,11 +2,15 @@
 
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
-import { getAuthHeaders } from "./cookies"
+import { getAuthHeaders, getCacheOptions } from "./cookies"
 
 export const listCartShippingMethods = async (cartId: string) => {
   const headers = {
     ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("fulfillment")),
   }
 
   return sdk.client
@@ -18,6 +22,8 @@ export const listCartShippingMethods = async (cartId: string) => {
           cart_id: cartId,
         },
         headers,
+        next,
+        cache: "force-cache",
       }
     )
     .then(({ shipping_options }) => shipping_options)
@@ -35,6 +41,10 @@ export const calculatePriceForShippingOption = async (
     ...(await getAuthHeaders()),
   }
 
+  const next = {
+    ...(await getCacheOptions("fulfillment")),
+  }
+
   const body = { cart_id: cartId, data }
 
   if (data) {
@@ -48,6 +58,7 @@ export const calculatePriceForShippingOption = async (
         method: "POST",
         body,
         headers,
+        next,
       }
     )
     .then(({ shipping_option }) => shipping_option)
