@@ -17,11 +17,21 @@ export default async function CheckoutForm({
     return null
   }
 
-  const shippingMethods = await listCartShippingMethods(cart.id)
-  const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? "")
+  let shippingMethods: HttpTypes.StoreCartShippingOption[] = []
+  let paymentMethods: { id: string }[] = []
 
-  if (!shippingMethods || !paymentMethods) {
-    return null
+  try {
+    const sm = await listCartShippingMethods(cart.id)
+    shippingMethods = sm || []
+  } catch (e) {
+    console.error("Error fetching shipping methods:", e)
+  }
+
+  try {
+    const pm = await listCartPaymentMethods(cart.region?.id ?? "")
+    paymentMethods = pm || []
+  } catch (e) {
+    console.error("Error fetching payment methods:", e)
   }
 
   return (
