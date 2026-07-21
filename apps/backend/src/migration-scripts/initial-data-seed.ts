@@ -23,13 +23,6 @@ import {
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
 
-// Payment providers available in the system
-const PAYMENT_PROVIDERS = {
-  EUROPE: "pp_system_default",
-  KENYA_PAYNECTOR: "pp_paynector_paynector",
-  KENYA_MPESA: "pp_mpesa_mpesa",
-};
-
 export default async function initial_data_seed({
   container,
 }: {
@@ -110,7 +103,7 @@ export default async function initial_data_seed({
           name: "Europe",
           currency_code: "eur",
           countries,
-          payment_providers: [PAYMENT_PROVIDERS.EUROPE],
+          payment_providers: ["pp_system_default"],
         },
       ],
     },
@@ -118,7 +111,7 @@ export default async function initial_data_seed({
   const region = regionResult[0];
   logger.info("Finished seeding regions.");
 
-  // Create Kenya region with Paynector and M-PESA
+  // Create Kenya region
   logger.info("Seeding Kenya region...");
   await createRegionsWorkflow(container).run({
     input: {
@@ -127,10 +120,7 @@ export default async function initial_data_seed({
           name: "Kenya",
           currency_code: "kes",
           countries: ["ke"],
-          payment_providers: [
-            PAYMENT_PROVIDERS.KENYA_PAYNECTOR,
-            PAYMENT_PROVIDERS.KENYA_MPESA,
-          ],
+          payment_providers: ["pp_system_default"],
         },
       ],
     },
