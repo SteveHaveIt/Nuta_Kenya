@@ -33,7 +33,10 @@ type WebhookInput = {
 
 type WebhookResult = {
   action: PaymentActions
-  data: Record<string, unknown>
+  data: {
+    session_id: string
+    amount: number
+  }
 }
 
 export type MpesaOptions = {
