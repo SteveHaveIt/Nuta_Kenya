@@ -1,22 +1,24 @@
 "use client"
 
 import { Heading, Text, clx } from "@modules/common/components/ui"
+
 import PaymentButton from "../payment-button"
 import { useSearchParams } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 
 const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
   const searchParams = useSearchParams()
+
   const isOpen = searchParams.get("step") === "review"
 
   const paidByGiftcard = !!(
-    (cart as unknown as Record<string, unknown>)?.gift_cards && 
-    ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && 
-    cart?.total === 0
+    (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0
   )
 
-  // Simplified check - we have payment collection or gift card
-  const hasPayment = cart.payment_collection || paidByGiftcard
+  const previousStepsCompleted =
+    cart.shipping_address &&
+    (cart.shipping_methods?.length ?? 0) > 0 &&
+    (cart.payment_collection || paidByGiftcard)
 
   return (
     <div className="bg-white">
@@ -33,25 +35,20 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
           Review
         </Heading>
       </div>
-      {isOpen && hasPayment && (
+      {isOpen && previousStepsCompleted && (
         <>
           <div className="flex items-start gap-x-1 w-full mb-6">
             <div className="w-full">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                By clicking the Pay button, you confirm that the information above is correct 
-                and that you have read and agree to our Terms & Conditions.
+                By clicking the Place Order button, you confirm that you have
+                read, understand and accept our Terms of Use, Terms of Sale and
+                Returns Policy and acknowledge that you have read Medusa
+                Store&apos;s Privacy Policy.
               </Text>
             </div>
           </div>
           <PaymentButton cart={cart} data-testid="submit-order-button" />
         </>
-      )}
-      {isOpen && !hasPayment && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <Text className="text-yellow-700">
-            Please complete the payment step first.
-          </Text>
-        </div>
       )}
     </div>
   )

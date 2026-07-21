@@ -1,10 +1,12 @@
 "use client"
 import { RadioGroup } from "@headlessui/react"
-import { isMpesa, isPaynector, paymentInfoMap } from "@lib/constants"
+import { isMpesa, isPaynector, isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
-import { CheckCircleSolid, CreditCard, DeviceMobile } from "@medusajs/icons"
+import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import ErrorMessage from "@modules/checkout/components/error-message"
-import PaymentContainer from "@modules/checkout/components/payment-container"
+import PaymentContainer, {
+  StripeCardContainer,
+} from "@modules/checkout/components/payment-container"
 import Divider from "@modules/common/components/divider"
 import {
   Button,
@@ -30,6 +32,8 @@ const Payment = ({
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [cardBrand, setCardBrand] = useState<string | null>(null)
+  const [cardComplete, setCardComplete] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
     activeSession?.provider_id ?? ""
   )
@@ -40,28 +44,16 @@ const Payment = ({
 
   const isOpen = searchParams.get("step") === "payment"
 
-  // Filter to only Paynector and M-PESA
-  const filteredPaymentMethods = availablePaymentMethods?.filter(
-    (method) => isPaynector(method.id) || isMpesa(method.id)
-  )
-
-  // Auto-select first payment method when payment step opens
-  useEffect(() => {
-    if (isOpen && !selectedPaymentMethod && filteredPaymentMethods?.length) {
-      const method = filteredPaymentMethods[0].id
-      setSelectedPaymentMethod(method)
-    }
-  }, [isOpen, selectedPaymentMethod, filteredPaymentMethods])
-
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
     
+    // Initiate payment session for all payment methods
     if (method) {
       await initiatePaymentSession(cart, {
         provider_id: method,
       }).catch((err) => {
-        console.error("Payment session error:", err)
+        setError(err.message)
       })
     }
   }
@@ -77,6 +69,7 @@ const Payment = ({
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams)
       params.set(name, value)
+
       return params.toString()
     },
     [searchParams]
@@ -95,23 +88,19 @@ const Payment = ({
         activeSession?.provider_id === selectedPaymentMethod
 
       if (!checkActiveSession || !activeSession) {
-        try {
-          await initiatePaymentSession(cart, {
-            provider_id: selectedPaymentMethod,
-          })
-        } catch (err: any) {
-          console.error("Payment session error:", err)
-        }
+        await initiatePaymentSession(cart, {
+          provider_id: selectedPaymentMethod,
+        })
       }
 
-      router.push(
+      return router.push(
         pathname + "?" + createQueryString("step", "review"),
         {
           scroll: false,
         }
       )
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
     } finally {
       setIsLoading(false)
     }
@@ -121,19 +110,10 @@ const Payment = ({
     setError(null)
   }, [isOpen])
 
-  // Get icon based on payment method
-  const getPaymentIcon = (providerId?: string) => {
-    if (isMpesa(providerId)) return <DeviceMobile />
-    if (isPaynector(providerId)) return <CreditCard />
-    return <CreditCard />
-  }
-
-  // Get payment description
-  const getPaymentDescription = (providerId?: string) => {
-    if (isPaynector(providerId)) return "Card/Mobile Money"
-    if (isMpesa(providerId)) return "M-PESA Mobile Money"
-    return "Payment"
-  }
+  // Filter out payment methods that are not Paynector or M-PESA
+  const filteredPaymentMethods = availablePaymentMethods?.filter(
+    (method) => isPaynector(method.id) || isMpesa(method.id)
+  )
 
   return (
     <div className="bg-white">
@@ -186,9 +166,9 @@ const Payment = ({
 
           {(!filteredPaymentMethods?.length || filteredPaymentMethods?.length === 0) && (
             <div className="text-ui-fg-muted py-4">
-              <Text>No payment methods available.</Text>
+              <Text>No payment methods available for this region.</Text>
               <Text className="text-sm mt-2">
-                Please contact support.
+                Please contact support or ensure Paynector and M-PESA are configured.
               </Text>
             </div>
           )}
@@ -250,10 +230,16 @@ const Payment = ({
                   data-testid="payment-details-summary"
                 >
                   <Container className="flex items-center h-7 w-fit p-2 bg-ui-button-neutral-hover">
-                    {getPaymentIcon(selectedPaymentMethod)}
+                    {paymentInfoMap[selectedPaymentMethod]?.icon || (
+                      <CreditCard />
+                    )}
                   </Container>
                   <Text>
-                    {getPaymentDescription(selectedPaymentMethod)}
+                    {isPaynector(selectedPaymentMethod)
+                      ? "Card/Mobile Money"
+                      : isMpesa(selectedPaymentMethod)
+                      ? "M-PESA Mobile Money"
+                      : "Another step will appear"}
                   </Text>
                 </div>
               </div>
