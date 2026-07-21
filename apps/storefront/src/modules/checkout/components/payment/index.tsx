@@ -44,13 +44,6 @@ const Payment = ({
 
   const isOpen = searchParams.get("step") === "payment"
 
-  // Auto-select first payment method when payment step opens
-  useEffect(() => {
-    if (isOpen && !selectedPaymentMethod && filteredPaymentMethods?.length) {
-      setSelectedPaymentMethod(filteredPaymentMethods[0].id)
-    }
-  }, [isOpen, selectedPaymentMethod, filteredPaymentMethods])
-
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
@@ -90,32 +83,25 @@ const Payment = ({
 
   const handleSubmit = async () => {
     setIsLoading(true)
-    setError(null)
-    
     try {
       const checkActiveSession =
         activeSession?.provider_id === selectedPaymentMethod
 
       if (!checkActiveSession || !activeSession) {
-        try {
-          await initiatePaymentSession(cart, {
-            provider_id: selectedPaymentMethod,
-          })
-        } catch (err: any) {
-          // Log but continue - the payment session might have been created
-          console.error("Payment session error:", err)
-        }
+        await initiatePaymentSession(cart, {
+          provider_id: selectedPaymentMethod,
+        })
       }
 
-      // Navigate to review regardless of payment session result
-      router.push(
+      return router.push(
         pathname + "?" + createQueryString("step", "review"),
         {
           scroll: false,
         }
       )
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+    } finally {
       setIsLoading(false)
     }
   }
