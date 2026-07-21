@@ -11,16 +11,15 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
-  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
+  PaymentSessionStatus,
   RefundPaymentInput,
   RefundPaymentOutput,
   RetrievePaymentInput,
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
-  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type PaynectorOptions = {
@@ -243,50 +242,6 @@ class PaynectorService extends AbstractPaymentProvider<PaynectorOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
-  }
-
-  async getWebhookActionAndData(
-    input: GetWebhookActionAndDataInput
-  ): Promise<WebhookActionResult> {
-    const rawPayload = input.rawData
-    const body = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload as Record<string, unknown>
-    const event = body.event as string
-
-    switch (event) {
-      case "checkout.completed":
-      case "payment.success":
-        return {
-          action: "authorized",
-          data: {
-            session_id: (body.data as Record<string, unknown>)?.id || body.id,
-            amount: (body.data as Record<string, unknown>)?.amount || body.amount,
-          },
-        }
-      case "checkout.failed":
-      case "payment.failed":
-        return {
-          action: "failed",
-          data: {
-            session_id: (body.data as Record<string, unknown>)?.id || body.id,
-            amount: (body.data as Record<string, unknown>)?.amount || body.amount,
-          },
-        }
-      default:
-        return {
-          action: "not_supported",
-          data: {},
-        }
-    }
-  }
-
-  async getPaymentStatus(
-    input: RetrievePaymentInput
-  ): Promise<{ status: string; data: Record<string, unknown> }> {
-    const paymentData = await this.retrievePayment(input)
-    return {
-      status: paymentData.status as string || "pending",
-      data: paymentData,
-    }
   }
 }
 

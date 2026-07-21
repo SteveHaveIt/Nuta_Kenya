@@ -11,7 +11,6 @@ import {
   CapturePaymentOutput,
   DeletePaymentInput,
   DeletePaymentOutput,
-  GetWebhookActionAndDataInput,
   InitiatePaymentInput,
   InitiatePaymentOutput,
   RefundPaymentInput,
@@ -20,7 +19,6 @@ import {
   RetrievePaymentOutput,
   UpdatePaymentInput,
   UpdatePaymentOutput,
-  WebhookActionResult,
 } from "@medusajs/framework/types"
 
 export type MpesaOptions = {
@@ -256,7 +254,6 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
           customer_message: data.CustomerMessage,
           amount: numericAmount,
           currency: currency_code?.toUpperCase() || "KES",
-          phone: this.formatPhoneNumber(phone),
           timestamp,
         },
       }
@@ -374,50 +371,6 @@ class MpesaService extends AbstractPaymentProvider<MpesaOptions> {
 
   async updatePayment(input: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     return { data: input.data }
-  }
-
-  async getWebhookActionAndData(
-    input: GetWebhookActionAndDataInput
-  ): Promise<WebhookActionResult> {
-    const rawPayload = input.rawData
-    const body = typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload as Record<string, unknown>
-
-    if ((body as any).Body?.stkCallback) {
-      const callback = (body as any).Body.stkCallback
-      const resultCode = callback.ResultCode
-
-      if (resultCode === 0) {
-        return {
-          action: "authorized",
-          data: {},
-        }
-      } else if (resultCode === 1032) {
-        return {
-          action: "canceled",
-          data: {},
-        }
-      } else {
-        return {
-          action: "failed",
-          data: {},
-        }
-      }
-    }
-
-    return {
-      action: "not_supported",
-      data: {},
-    }
-  }
-
-  async getPaymentStatus(
-    input: RetrievePaymentInput
-  ): Promise<{ status: string; data: Record<string, unknown> }> {
-    const paymentData = await this.retrievePayment(input)
-    return {
-      status: paymentData.status as string || "pending",
-      data: paymentData,
-    }
   }
 }
 
